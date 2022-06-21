@@ -1,6 +1,8 @@
+import Contact from "./components/Contact";
+
 function App() {
   return (
-    <h1>하이2</h1>
+    <Contact>하이2</Contact>
   );
 }
 
