@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 export default class ContactDetail extends React.Component {
   constructor(props) {
@@ -15,6 +16,7 @@ export default class ContactDetail extends React.Component {
     this.handleRemove = this.handleRemove.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
+    this.handleKeyPress = this.handleKeyPress.bind(this);
   }
 
   handleEdit() {
@@ -40,16 +42,38 @@ export default class ContactDetail extends React.Component {
     this.setState({ isEditMode: false });
   }
 
+  handleKeyPress(e) {
+    if (e.charCode === 13) {
+      if (e.target.name === "name") {
+        this.inputPhone.focus();
+      } else if (e.target.name === "phone") {
+        this.handleSave();
+      }
+    }
+  }
+
   render() {
     const component = (
       <div>
         {this.state.isEditMode ? (
           <div>
             <p>
-              <input name="name" onChange={this.handleChange} value={this.state.name}></input>
+              <input
+                name="name"
+                ref={(ref) => (this.inputName = ref)}
+                onChange={this.handleChange}
+                value={this.state.name}
+                onKeyPress={this.handleKeyPress}
+              ></input>
             </p>
             <p>
-              <input name="phone" onChange={this.handleChange} value={this.state.phone}></input>
+              <input
+                name="phone"
+                ref={(ref) => (this.inputPhone = ref)}
+                onChange={this.handleChange}
+                value={this.state.phone}
+                onKeyPress={this.handleKeyPress}
+              ></input>
             </p>
           </div>
         ) : (
@@ -77,3 +101,19 @@ export default class ContactDetail extends React.Component {
     );
   }
 }
+
+ContactDetail.propTypes = {
+  name: PropTypes.string,
+  phone: PropTypes.string,
+  onSave: PropTypes.func,
+  onRemove: PropTypes.func,
+};
+
+ContactDetail.defaultProps = {
+  onSave: () => {
+    console.error("onSave is not defined");
+  },
+  onRemove: () => {
+    console.error("onRemove is not defined");
+  },
+};

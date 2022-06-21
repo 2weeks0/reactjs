@@ -10,12 +10,7 @@ export default class Contact extends React.Component {
     this.state = {
       keyword: "",
       selectedIndex: -1,
-      data: [
-        { name: "KIM", phone: "010-0000-0001" },
-        { name: "LEE", phone: "010-0000-0002" },
-        { name: "CHOI", phone: "010-0000-0003" },
-        { name: "PARK", phone: "010-0000-0004" },
-      ],
+      data: [],
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -23,6 +18,17 @@ export default class Contact extends React.Component {
     this.handleCreate = this.handleCreate.bind(this);
     this.handleRemove = this.handleRemove.bind(this);
     this.handleSaveEdit = this.handleSaveEdit.bind(this);
+  }
+
+  componentDidMount() {
+    const data = localStorage.data;
+    if (data) {
+      this.setState({ data: JSON.parse(data) });
+    }
+  }
+
+  componentDidUpdate() {
+    localStorage.data = JSON.stringify(this.state.data);
   }
 
   handleChange(e) {
