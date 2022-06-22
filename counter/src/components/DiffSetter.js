@@ -1,27 +1,18 @@
-import React from "react";
-import { connect } from "react-redux";
-import { setDiff } from "../store/slices/diffSlice";
+import { useSelector, useDispatch } from "react-redux";
+import { setDiff, selectDiff } from "../store/slices/diffSlice";
 
-class DiffSetter extends React.Component {
-  constructor(props) {
-    super(props);
+export default function DiffSetter() {
+  const diff = useSelector(selectDiff);
+  const dispatch = useDispatch();
 
-    this.handleChange = this.handleChange.bind(this);
-  }
-
-  handleChange(e) {
-    this.props.dispatch(setDiff({ diff: +e.target.value }));
-  }
-
-  render() {
-    return (
-      <div>
-        <input type="number" min="1" onChange={this.handleChange} value={this.props.diff} />
-      </div>
-    );
-  }
+  return (
+    <div>
+      <input
+        type="number"
+        min="1"
+        onChange={(e) => dispatch(setDiff({ diff: +e.target.value }))}
+        value={diff}
+      />
+    </div>
+  );
 }
-
-const mapStateToProps = (state) => ({ diff: state.diff.value });
-
-export default connect(mapStateToProps)(DiffSetter);

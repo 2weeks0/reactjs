@@ -13,4 +13,7 @@ const diffSlice = createSlice({
 });
 
 export const { setDiff } = diffSlice.actions;
+
+export const selectDiff = (state) => state.diff.value;
+
 export default diffSlice.reducer;

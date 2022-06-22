@@ -25,12 +25,14 @@ export const incrementAsync =
     }, 1000);
   };
 
-  export const decrementAsync =
+export const decrementAsync =
   ({ diff }) =>
   (dispatch) => {
     setTimeout(() => {
       dispatch(decrement({ diff }));
     }, 1000);
   };
+
+export const selectCounter = (state) => state.counter.number;
 
 export default counterSlice.reducer;

@@ -1,16 +1,12 @@
-import React from "react";
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
+import { selectCounter } from "../store/slices/counterSlice";
 
-class Value extends React.Component {
-  render() {
-    return (
-      <div>
-        <h3>{this.props.number}</h3>
-      </div>
-    );
-  }
+export default function Value() {
+  const count = useSelector(selectCounter);
+
+  return (
+    <div>
+      <h3>{count}</h3>
+    </div>
+  );
 }
-
-const mapStateToProps = (state) => ({ number: state.counter.number });
-
-export default connect(mapStateToProps)(Value);
