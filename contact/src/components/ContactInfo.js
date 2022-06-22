@@ -1,10 +1,7 @@
-import React from "react";
 import PropsType from "prop-types";
 
-export default class ContactInfo extends React.Component {
-  render() {
-    return <p onClick={this.props.onClick}>{this.props.name}</p>;
-  }
+export default function ContactInfo(props) {
+  return <p onClick={props.onClick}>{props.name}</p>;
 }
 
 ContactInfo.propsType = {

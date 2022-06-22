@@ -1,98 +1,70 @@
-import React from "react";
+import { useState, useEffect } from "react";
 import ContactCreate from "./ContactCreate";
 import ContactDetail from "./ContactDetail";
 import ContactInfo from "./ContactInfo";
 
-export default class Contact extends React.Component {
-  constructor(props) {
-    super(props);
+export default function Contact() {
+  const [keyword, setKeyword] = useState("");
+  const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [data, setData] = useState([]);
 
-    this.state = {
-      keyword: "",
-      selectedIndex: -1,
-      data: [],
-    };
-
-    this.handleChange = this.handleChange.bind(this);
-    this.handleClickDetail = this.handleClickDetail.bind(this);
-    this.handleCreate = this.handleCreate.bind(this);
-    this.handleRemove = this.handleRemove.bind(this);
-    this.handleSaveEdit = this.handleSaveEdit.bind(this);
-  }
-
-  componentDidMount() {
-    const data = localStorage.data;
-    if (data) {
-      this.setState({ data: JSON.parse(data) });
+  useEffect(() => {
+    const localData = JSON.parse(localStorage.data);
+    if (localData.length) {
+      setData(localData);
     }
-  }
+  }, []);
 
-  componentDidUpdate() {
-    localStorage.data = JSON.stringify(this.state.data);
-  }
+  useEffect(() => {
+    localStorage.data = JSON.stringify(data);
+  }, [data]);
 
-  handleChange(e) {
-    this.setState({ keyword: e.target.value });
-  }
-
-  handleClickDetail(index) {
-    this.setState({ selectedIndex: index });
-  }
-
-  handleCreate(newOne) {
-    this.setState((prevState) => ({ data: [...prevState.data, newOne] }));
-  }
-
-  handleRemove() {
-    this.setState((prevState) => {
-      prevState.data.splice(prevState.selectedIndex, 1);
-      return { data: [...prevState.data], selectedIndex: -1 };
+  const handleClickDetail = (index) => setSelectedIndex(index);
+  const handleCreate = (newOne) => setData((prev) => [...prev, newOne]);
+  const handleRemove = () => {
+    setData((prev) => {
+      prev.splice(selectedIndex, 1);
+      return prev;
     });
-  }
-
-  handleSaveEdit(newOne) {
-    this.setState((prevState) => {
-      prevState.data.splice(prevState.selectedIndex, 1);
-      const data = [...prevState.data, newOne];
+    setSelectedIndex(-1);
+  };
+  const handleSaveEdit = (newOne) => {
+    setData((prev) => {
+      prev.splice(selectedIndex, 1);
+      const data = [...prev, newOne];
       data.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
-      const selectedIndex = data.indexOf(newOne);
-      return { data, selectedIndex };
+      return data;
     });
-  }
+    setSelectedIndex(data.indexOf(newOne));
+  };
 
-  render() {
-    const mapToComponent = (data) => {
-      data.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
-      return data
-        .filter((it) => it.name.toLowerCase().includes(this.state.keyword.toLocaleLowerCase()))
-        .map((it, idx) => (
-          <ContactInfo
-            name={it.name}
-            phone={it.phone}
-            key={idx}
-            onClick={this.handleClickDetail.bind(this, idx)}
-          />
-        ));
-    };
-
-    return (
-      <div>
-        <h1>Contact</h1>
-        <input onChange={this.handleChange} placeholder="Search"></input>
-        <div>{mapToComponent(this.state.data)}</div>
-        <ContactDetail
-          key={this.state.selectedIndex}
-          name={
-            this.state.selectedIndex === -1 ? null : this.state.data[this.state.selectedIndex].name
-          }
-          phone={
-            this.state.selectedIndex === -1 ? null : this.state.data[this.state.selectedIndex].phone
-          }
-          onRemove={this.handleRemove}
-          onSave={(newOne) => this.handleSaveEdit(newOne)}
+  const mapToComponent = (data) => {
+    data.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
+    return data
+      .filter((it) => it.name.toLowerCase().includes(keyword.toLocaleLowerCase()))
+      .map((it, idx) => (
+        <ContactInfo
+          name={it.name}
+          phone={it.phone}
+          key={idx}
+          onClick={() => handleClickDetail(idx)}
         />
-        <ContactCreate onCreate={(newOne) => this.handleCreate(newOne)} />
-      </div>
-    );
-  }
+      ));
+  };
+
+  return (
+    <div>
+      <h1>Contact</h1>
+      <input onChange={(e) => setKeyword(e.target.value)} placeholder="Search"></input>
+      <div>{mapToComponent(data)}</div>
+      <ContactDetail
+        key={selectedIndex}
+        name={selectedIndex === -1 ? null : data[selectedIndex].name}
+        phone={selectedIndex === -1 ? null : data[selectedIndex].phone}
+        onRemove={handleRemove}
+        onSave={(newOne) => handleSaveEdit(newOne)}
+      />
+      <ContactCreate onCreate={(newOne) => handleCreate(newOne)} />
+    </div>
+  );
 }

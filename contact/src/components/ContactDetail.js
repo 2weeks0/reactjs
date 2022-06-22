@@ -1,115 +1,14 @@
-import React from "react";
+import { useState, useRef } from "react";
 import PropTypes from "prop-types";
 
-export default class ContactDetail extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      isEditMode: false,
-      name: props.name,
-      phone: props.phone,
-    };
-
-    this.handleEdit = this.handleEdit.bind(this);
-    this.handleSave = this.handleSave.bind(this);
-    this.handleRemove = this.handleRemove.bind(this);
-    this.handleChange = this.handleChange.bind(this);
-    this.handleCancel = this.handleCancel.bind(this);
-    this.handleKeyPress = this.handleKeyPress.bind(this);
-  }
-
-  handleEdit() {
-    this.setState({ isEditMode: true });
-  }
-
-  handleSave() {
-    this.props.onSave({ name: this.state.name, phone: this.state.phone });
-    this.setState({ isEditMode: false });
-  }
-
-  handleRemove() {
-    this.props.onRemove();
-  }
-
-  handleChange(e) {
-    const newState = {};
-    newState[e.target.name] = e.target.value;
-    this.setState(newState);
-  }
-
-  handleCancel() {
-    this.setState({ isEditMode: false });
-  }
-
-  handleKeyPress(e) {
-    if (e.charCode === 13) {
-      if (e.target.name === "name") {
-        this.inputPhone.focus();
-      } else if (e.target.name === "phone") {
-        this.handleSave();
-      }
-    }
-  }
-
-  render() {
-    const component = (
-      <div>
-        {this.state.isEditMode ? (
-          <div>
-            <p>
-              <input
-                name="name"
-                ref={(ref) => (this.inputName = ref)}
-                onChange={this.handleChange}
-                value={this.state.name}
-                onKeyPress={this.handleKeyPress}
-              ></input>
-            </p>
-            <p>
-              <input
-                name="phone"
-                ref={(ref) => (this.inputPhone = ref)}
-                onChange={this.handleChange}
-                value={this.state.phone}
-                onKeyPress={this.handleKeyPress}
-              ></input>
-            </p>
-          </div>
-        ) : (
-          <div>
-            <p>{this.state.name}</p>
-            <p>{this.state.phone}</p>
-          </div>
-        )}
-        <span>
-          <button onClick={this.state.isEditMode ? this.handleSave : this.handleEdit}>
-            {this.state.isEditMode ? "Save" : "Edit"}
-          </button>
-          <button onClick={this.state.isEditMode ? this.handleCancel : this.handleRemove}>
-            {this.state.isEditMode ? "Cancel" : "Remove"}
-          </button>
-        </span>
-      </div>
-    );
-
-    return (
-      <div>
-        <h1>Details</h1>
-        {this.props.name ? component : "Not selected."}
-      </div>
-    );
-  }
-}
-
-ContactDetail.propTypes = {
+const propTypes = {
   name: PropTypes.string,
   phone: PropTypes.string,
   onSave: PropTypes.func,
   onRemove: PropTypes.func,
 };
 
-ContactDetail.defaultProps = {
+const defaultProps = {
   onSave: () => {
     console.error("onSave is not defined");
   },
@@ -117,3 +16,77 @@ ContactDetail.defaultProps = {
     console.error("onRemove is not defined");
   },
 };
+
+export default function ContactDetail(props) {
+  const [isEditMode, setEditMode] = useState(false);
+  const [name, setName] = useState(props.name);
+  const [phone, setPhone] = useState(props.phone);
+
+  const inputPhoneElement = useRef(null);
+
+  const handleEdit = () => setEditMode(true);
+  const handleSave = () => {
+    props.onSave({ name, phone });
+    setEditMode(false);
+  };
+  const handleRemove = () => props.onRemove();
+  const handleCancel = () => setEditMode(false);
+  const handleKeyPress = (e) => {
+    if (e.charCode === 13) {
+      if (e.target.name === "name") {
+        inputPhoneElement.current.focus();
+      } else if (e.target.name === "phone") {
+        handleSave();
+      }
+    }
+  };
+
+  const component = (
+    <div>
+      {isEditMode ? (
+        <div>
+          <p>
+            <input
+              name="name"
+              onChange={(e) => setName(e.target.value)}
+              value={name}
+              onKeyPress={handleKeyPress}
+            ></input>
+          </p>
+          <p>
+            <input
+              name="phone"
+              ref={inputPhoneElement}
+              onChange={(e) => setPhone(e.target.value)}
+              value={phone}
+              onKeyPress={handleKeyPress}
+            ></input>
+          </p>
+        </div>
+      ) : (
+        <div>
+          <p>{name}</p>
+          <p>{phone}</p>
+        </div>
+      )}
+      <span>
+        <button onClick={isEditMode ? handleSave : handleEdit}>
+          {isEditMode ? "Save" : "Edit"}
+        </button>
+        <button onClick={isEditMode ? handleCancel : handleRemove}>
+          {isEditMode ? "Cancel" : "Remove"}
+        </button>
+      </span>
+    </div>
+  );
+
+  return (
+    <div>
+      <h1>Details</h1>
+      {name ? component : "Not selected."}
+    </div>
+  );
+}
+
+ContactDetail.propTypes = propTypes;
+ContactDetail.defaultProps = defaultProps;
