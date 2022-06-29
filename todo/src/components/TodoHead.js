@@ -1,17 +1,29 @@
 import styled from "styled-components";
+import { useSelector } from "react-redux";
+import { selectTodoList } from "../store/slices/todoSlice";
 
 const TodoHeadStyle = styled.div`
-
   border-bottom: solid 1px #e9ecef;
 
   h1 {
-    padding: 20px 0 0 20px;
+    padding: 20px 0 10px 20px;
+    margin: 0;
   }
 
   .dayName {
     padding-left: 20px;
     padding-bottom: 20px;
     color: gray;
+    font-size: 24px;
+    font-weight: bold;
+  }
+
+  .remainTodo {
+    padding-left: 20px;
+    padding-bottom: 20px;
+    color: #20c997;
+    font-size: 18px;
+    font-weight: bold;
   }
 `;
 
@@ -26,10 +38,13 @@ export default function TodoHead() {
 
   const dayName = today.toLocaleString("ko-KR", { weekday: "long" });
 
+  const todoList = useSelector(selectTodoList);
+
   return (
     <TodoHeadStyle>
       <h1>{dateString}</h1>
       <div className="dayName">{dayName}</div>
+      <div className="remainTodo">할 일 {todoList.length}개 남음</div>
     </TodoHeadStyle>
   );
 }
