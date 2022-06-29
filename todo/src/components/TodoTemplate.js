@@ -9,6 +9,7 @@ const TodoTemplateStyle = styled.div`
   margin: 0 auto;
   margin-top: 96px;
   margin-bottom: 32px;
+  position: relative;
 `;
 
 export default function TodoTemplate({ children }) {

@@ -38,13 +38,13 @@ export default function TodoHead() {
 
   const dayName = today.toLocaleString("ko-KR", { weekday: "long" });
 
-  const todoList = useSelector(selectTodoList);
+  const remainCount = useSelector(selectTodoList).filter((it) => !it.done).length;
 
   return (
     <TodoHeadStyle>
       <h1>{dateString}</h1>
       <div className="dayName">{dayName}</div>
-      <div className="remainTodo">할 일 {todoList.length}개 남음</div>
+      <div className="remainTodo">할 일 {remainCount}개 남음</div>
     </TodoHeadStyle>
   );
 }
